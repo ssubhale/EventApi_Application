@@ -9,6 +9,7 @@ from api.serializers import SignUpSerializer, UserSerializer, AllEventSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework_simplejwt.tokens import RefreshToken
 from api.token import auth_api_func
+from rest_framework_simplejwt.tokens import OutstandingToken, BlacklistedToken
 
 
 @api_view(['POST'])
@@ -52,7 +53,6 @@ def signup_user(request):
 def sign_in_user(request):
     """
     API view to authenticate a user and return JWT tokens.
-
     This view checks the provided credentials (email and password),
     authenticates the user, and generates access and refresh tokens if valid.
     """
@@ -62,7 +62,7 @@ def sign_in_user(request):
         password = request.data.get('password')
 
         # Authenticate the user using the provided credentials
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, username=email, password=password)  # Use username for authentication
         
         # Check if the user is successfully authenticated
         if user is not None:
@@ -86,9 +86,9 @@ def sign_in_user(request):
             return JsonResponse({'error': 'Invalid Credentials'}, status=http_status.HTTP_400_BAD_REQUEST)
         
     except Exception as e:
-        # handle exception during Authentication
-        return JsonResponse({'error': f"{e}"}, status=http_status.HTTP_404_NOT_FOUND)
-    
+        # Handle exception during authentication
+        print("Exception sign in:", e)
+        return JsonResponse({'error': str(e)}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -117,7 +117,7 @@ def create_event(request):
 
     # Check if the user has admin permissions
     if user_role != 'Admin':
-        return JsonResponse({'error': 'Permissions not allowed'}, status=http_status.HTTP_403_FORBIDDEN)
+        return JsonResponse({'error': 'Don`t have permissions to create event'}, status=http_status.HTTP_403_FORBIDDEN)
 
     try:
         # Get event details from the request data
@@ -206,7 +206,7 @@ def purchase_tickets(request,id):
 
     # Check if the user has the necessary role to purchase tickets
     if user_role != 'User':
-        return JsonResponse({'error': 'Permissions not allowed'}, status=http_status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'error': 'Don`t have permissions to purchase tickets'}, status=http_status.HTTP_400_BAD_REQUEST)
     
     try:
         # Extract the quantity of tickets to purchase from the request data
@@ -236,9 +236,11 @@ def purchase_tickets(request,id):
         event.save()
 
         # return appropriate response to the user
-        return JsonResponse({'msg': 'success','comment': f'Successfully purchased {quantity} tickets'}, status=http_status.HTTP_200_OK)
+        return JsonResponse({'msg': 'success','comment': f'Successfully purchased {quantity} tickets of event {event.name}'}, status=http_status.HTTP_200_OK)
 
     except Exception as e:
         # Handle any exceptions that occur during the process
         return JsonResponse({'error': f"{e}"}, status=http_status.HTTP_400_BAD_REQUEST)
+
+
 

@@ -1,6 +1,4 @@
 from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
 from api.views import *
 
 
@@ -10,6 +8,6 @@ urlpatterns = [
     path('create_event/',create_event, name='create_event'),
     path('get_events/', get_events, name='get_events'),
     path('events/<int:id>/purchase/', purchase_tickets, name='purchase_tickets'),
-
+    
 ]
 

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -160,8 +161,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-SIMPLE_JWT = {
+
+REST_FRAMEWORK_SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=50),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_OBTAIN_SERIALIZER': 'your_project_path.serializers.CustomTokenObtainPairSerializer',
+    # Add other settings here...
 }
 
