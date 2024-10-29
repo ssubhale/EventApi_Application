@@ -1,5 +1,5 @@
 # EventApi_Application
-Event management and ticket purchasing django app
+Event management and ticket purchasing django app (application only have the backend with JWT Authentication)
 
 Author - Shrikrishna Ubhale (Software Engineer, email : krishnaubhale1998@gmail.com)
 
